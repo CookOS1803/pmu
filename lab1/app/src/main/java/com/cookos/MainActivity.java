@@ -1,5 +1,6 @@
 package com.cookos;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -9,12 +10,20 @@ import android.widget.TextView;
 import org.mariuszgromada.math.mxparser.Expression;
 import org.mariuszgromada.math.mxparser.License;
 
+import java.util.Locale;
+
 public class MainActivity extends AppCompatActivity {
 
     private TextView expressionField;
+    private TextView answerField;
+    private double memory = 0d;
+
+    private interface Function {
+        double calculate(double arg);
+    }
 
     static {
-        License.iConfirmNonCommercialUse("");
+        License.iConfirmNonCommercialUse("cookos");
     }
 
     @Override
@@ -23,49 +32,141 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         expressionField = findViewById(R.id.expression);
+        answerField = findViewById(R.id.answer);
 
-        Button clear = findViewById(R.id.clear);
-        clear.setOnClickListener(v -> {
-            var oldText = expressionField.getText();
-            var newText = oldText.subSequence(0, oldText.length() - 1);
+        initClearButton();
+        initClearAllButton();
+        initEqualsButton();
 
-            expressionField.setText(newText);
+        initFuncButton(R.id.sin, Math::sin);
+        initFuncButton(R.id.cos, Math::cos);
+
+        initTextButton(R.id.zero,         "0");
+        initTextButton(R.id.one,          "1");
+        initTextButton(R.id.two,          "2");
+        initTextButton(R.id.three,        "3");
+        initTextButton(R.id.four,         "4");
+        initTextButton(R.id.five,         "5");
+        initTextButton(R.id.six,          "6");
+        initTextButton(R.id.seven,        "7");
+        initTextButton(R.id.eight,        "8");
+        initTextButton(R.id.nine,         "9");
+        initTextButton(R.id.plus,         "+");
+        initTextButton(R.id.minus,        "-");
+        initTextButton(R.id.multiply,     "*");
+        initTextButton(R.id.divide,       "/");
+        initTextButton(R.id.dot,          ".");
+        initTextButton(R.id.leftBracket,  "(");
+        initTextButton(R.id.rightBracket, ")");
+
+        Button memoryClear = findViewById(R.id.memoryClear);
+        memoryClear.setOnClickListener(v -> memory = 0d);
+
+        Button memoryReturn = findViewById(R.id.memoryReturn);
+        memoryReturn.setOnClickListener(v -> {
+            var text = withoutTrailingZeroes(String.format(Locale.US, "%f", memory));
+
+            expressionField.append(text);
+            calculate();
         });
 
+        Button memoryPlus = findViewById(R.id.memoryPlus);
+        memoryPlus.setOnClickListener(v -> {
+            var e = new Expression(answerField.getText().toString());
+
+            memory += e.calculate();
+        });
+
+        Button memoryMinus = findViewById(R.id.memoryMinus);
+        memoryMinus.setOnClickListener(v -> {
+            var e = new Expression(answerField.getText().toString());
+
+            memory -= e.calculate();
+        });
+
+        Button memorySave = findViewById(R.id.memorySave);
+        memorySave.setOnClickListener(v -> {
+            var e = new Expression(answerField.getText().toString());
+
+            memory = e.calculate();
+        });
+    }
+
+    private void initFuncButton(int id, Function function) {
+        Button sin = findViewById(id);
+        sin.setOnClickListener(v -> {
+            var e = new Expression(expressionField.getText().toString());
+
+            var answer = function.calculate(e.calculate());
+            var text = String.format(Locale.US, "%f", answer);
+
+            expressionField.setText(text);
+            answerField.setText(text);
+        });
+    }
+
+    private void initEqualsButton() {
+        Button equals = findViewById(R.id.equals);
+        equals.setOnClickListener(v -> {
+            var e = new Expression(answerField.getText().toString());
+            var answer = e.calculate();
+
+            if (Double.isNaN(answer))
+                return;
+
+            var text = withoutTrailingZeroes(String.format(Locale.US, "%f", answer));
+
+            answerField.setText("");
+            expressionField.setText(text);
+        });
+    }
+
+    private void initClearAllButton() {
         Button clearAll = findViewById(R.id.clearAll);
         clearAll.setOnClickListener(v -> {
             expressionField.setText("");
-        });
-
-        initButton(R.id.zero,  "0");
-        initButton(R.id.one,   "1");
-        initButton(R.id.two,   "2");
-        initButton(R.id.three, "3");
-        initButton(R.id.four,  "4");
-        initButton(R.id.five,  "5");
-        initButton(R.id.six,   "6");
-        initButton(R.id.seven, "7");
-        initButton(R.id.eight, "8");
-        initButton(R.id.nine,  "9");
-
-        initButton(R.id.plus,     "+");
-        initButton(R.id.minus,    "-");
-        initButton(R.id.multiply, "*");
-        initButton(R.id.divide,   "/");
-
-        Button equals = findViewById(R.id.equals);
-        equals.setOnClickListener(v -> {
-            var e = new Expression(expressionField.getText().toString());
-
-            expressionField.setText(Double.toString(e.calculate()));
+            answerField.setText("");
         });
     }
 
-    private void initButton(int id, String text) {
+    private void initClearButton() {
+        Button clear = findViewById(R.id.clear);
+        clear.setOnClickListener(v -> {
+
+            var oldText = expressionField.getText();
+
+            if (oldText.length() == 0)
+                return;
+
+            var newText = oldText.subSequence(0, oldText.length() - 1);
+
+            expressionField.setText(newText);
+
+            calculate();
+        });
+    }
+
+    private void initTextButton(int id, String text) {
         Button button = findViewById(id);
         button.setOnClickListener(v -> {
             expressionField.append(text);
+            calculate();
         });
     }
 
+    private void calculate() {
+        if (expressionField.getText().length() == 0)
+            return;
+
+        var e = new Expression(expressionField.getText().toString());
+        var text = String.format(Locale.US, "%f", e.calculate());
+        text = withoutTrailingZeroes(text);
+
+        answerField.setText(text);
+    }
+
+    @NonNull
+    private String withoutTrailingZeroes(String text) {
+        return text.contains(".") ? text.replaceAll("0*$", "").replaceAll("\\.$", "") : text;
+    }
 }
