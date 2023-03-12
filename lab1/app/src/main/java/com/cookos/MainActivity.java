@@ -155,8 +155,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void calculate() {
-        if (expressionField.getText().length() == 0)
+        if (expressionField.getText().length() == 0) {
+            answerField.setText("");
             return;
+        }
 
         var e = new Expression(expressionField.getText().toString());
         var text = String.format(Locale.US, "%f", e.calculate());
@@ -166,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @NonNull
-    private String withoutTrailingZeroes(String text) {
+    private String withoutTrailingZeroes(@NonNull String text) {
         return text.contains(".") ? text.replaceAll("0*$", "").replaceAll("\\.$", "") : text;
     }
 }
