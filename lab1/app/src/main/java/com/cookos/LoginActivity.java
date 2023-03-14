@@ -4,9 +4,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.SignInButton;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,12 +25,16 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String LOGIN = "admin@gmail.com";
     private static final String PASSWORD = "admin";
+    private static final int RC_SIGN_IN = 0;
 
     private HashMap<String, byte[]> accounts;
 
     private EditText emailField;
     private EditText passwordField;
     private TextView loginMessage;
+
+    private SignInButton googleButton;
+    private GoogleSignInClient googleSignInClient;
 
     @Override
     @SuppressWarnings("unchecked")
@@ -42,6 +56,45 @@ public class LoginActivity extends AppCompatActivity {
             accounts.put(LOGIN, HashPassword.getHash(PASSWORD));
         } else {
             accounts = (HashMap<String, byte[]>) extra;
+        }
+
+        googleButton = findViewById(R.id.googleButton);
+
+        var gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        googleButton.setOnClickListener(v -> {
+            if (v.getId() == R.id.googleButton)
+                googleSignIn();
+        });
+    }
+
+    private void googleSignIn() {
+        var signInIntent = googleSignInClient.getSignInIntent();
+        startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            handleSignInResult(task);
+        }
+    }
+
+    private void handleSignInResult(Task<GoogleSignInAccount> completedTask) {
+        try {
+            GoogleSignInAccount account = completedTask.getResult(ApiException.class);
+            Toast.makeText(this, "Signed in", Toast.LENGTH_SHORT).show();
+            startCalculator();
+
+        } catch (ApiException e) {
+            Log.w("Error", "signInResult:failed code=" + e.getStatusCode());
         }
     }
 
@@ -71,8 +124,12 @@ public class LoginActivity extends AppCompatActivity {
                 return;
             }
 
-            var intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+            startCalculator();
         });
+    }
+
+    private void startCalculator() {
+        var intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 }

@@ -6,6 +6,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 
 import org.mariuszgromada.math.mxparser.Expression;
 import org.mariuszgromada.math.mxparser.License;
@@ -17,6 +24,15 @@ public class MainActivity extends AppCompatActivity {
     private TextView expressionField;
     private TextView answerField;
     private double memory = 0d;
+
+    private GoogleSignInClient googleSignInClient;
+
+    @Override
+    protected void onDestroy() {
+        googleSignInClient.signOut();
+
+        super.onDestroy();
+    }
 
     private interface Function {
         double calculate(double arg);
@@ -90,6 +106,12 @@ public class MainActivity extends AppCompatActivity {
 
             memory = e.calculate();
         });
+
+        var gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestEmail()
+                .build();
+
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
     }
 
     private void initFuncButton(int id, Function function) {
@@ -171,4 +193,6 @@ public class MainActivity extends AppCompatActivity {
     private String withoutTrailingZeroes(@NonNull String text) {
         return text.contains(".") ? text.replaceAll("0*$", "").replaceAll("\\.$", "") : text;
     }
+
+
 }

@@ -3,10 +3,12 @@ package com.cookos;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.HashMap;
 
@@ -41,8 +43,8 @@ public class RegisterActivity extends AppCompatActivity {
         registerButton.setOnClickListener(v -> {
             var email = registerEmailField.getText().toString();
 
-            if (email.isBlank()) {
-                registerError(R.string.registerEmailBlank);
+            if (!EmailValidator.validate(email)) {
+                registerError(R.string.emailNotValid);
                 return;
             }
 
@@ -54,8 +56,8 @@ public class RegisterActivity extends AppCompatActivity {
             var password = registerPasswordField.getText().toString();
             var repeatPassword = repeatPasswordField.getText().toString();
 
-            if (password.isEmpty() || repeatPassword.isEmpty()) {
-                registerError(R.string.passwordBlank);
+            if (!PasswordValidator.validate(password)) {
+                registerError(R.string.passwordNotValid);
                 return;
             }
 
@@ -75,12 +77,16 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void registerError(int messageId) {
-        registerMessage.setTextColor(getResources().getColor(R.color.red));
-        registerMessage.setText(messageId);
+        //registerMessage.setTextColor(getResources().getColor(R.color.red));
+        //registerMessage.setText(messageId);
+
+        Toast.makeText(this, getString(messageId), Toast.LENGTH_SHORT).show();
     }
 
     private void registerSuccess() {
-        registerMessage.setTextColor(getResources().getColor(R.color.green));
-        registerMessage.setText(R.string.registered);
+        //registerMessage.setTextColor(getResources().getColor(R.color.green));
+        //registerMessage.setText(R.string.registered);
+
+        Toast.makeText(this, getString(R.string.registered), Toast.LENGTH_SHORT).show();
     }
 }
