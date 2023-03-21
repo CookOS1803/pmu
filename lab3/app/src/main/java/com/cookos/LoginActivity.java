@@ -70,6 +70,14 @@ public class LoginActivity extends AppCompatActivity {
             if (v.getId() == R.id.googleButton)
                 googleSignIn();
         });
+
+
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .setReorderingAllowed(true)
+                    .add(R.id.fragment_container_view, LoginFragment.class, null)
+                    .commit();
+        }
     }
 
     private void googleSignIn() {
