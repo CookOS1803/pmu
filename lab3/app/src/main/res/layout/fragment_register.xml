@@ -3,8 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginFragment">
-
+    tools:context=".RegisterFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -12,15 +11,15 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/textView2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/loginText"
+            android:text="@string/registerText"
             android:textAlignment="center"
             android:textSize="34sp" />
 
         <EditText
-            android:id="@+id/emailField"
+            android:id="@+id/registerEmailField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
@@ -28,26 +27,20 @@
             android:inputType="textEmailAddress" />
 
         <EditText
-            android:id="@+id/passwordField"
+            android:id="@+id/registerPasswordField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="password"
             android:inputType="textPassword" />
 
-        <Button
-            android:id="@+id/loginButton"
+        <EditText
+            android:id="@+id/repeatPasswordField"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/loginButton" />
-
-        <TextView
-            android:id="@+id/loginMessage"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAlignment="center"
-            android:textColor="#FF0000"
-            android:textSize="20sp" />
+            android:ems="10"
+            android:hint="repeat password"
+            android:inputType="textPassword" />
 
         <Button
             android:id="@+id/registerButton"
@@ -55,9 +48,5 @@
             android:layout_height="wrap_content"
             android:text="@string/registerButton" />
 
-        <com.google.android.gms.common.SignInButton
-            android:id="@+id/googleButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
     </LinearLayout>
 </FrameLayout>
