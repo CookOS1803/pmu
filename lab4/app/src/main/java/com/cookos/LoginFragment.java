@@ -86,7 +86,7 @@ public class LoginFragment extends Fragment {
 
     private void initRegisterButton() {
         registerButton.setOnClickListener(v -> {
-            activity.replaceFragments(RegisterFragment.class);
+            activity.replaceFragments(RegisterFragment.class, "register");
         });
     }
 
@@ -111,7 +111,7 @@ public class LoginFragment extends Fragment {
     }
 
     private void startCalculator() {
-        activity.replaceFragments(GalleryFragment.class);
+        activity.replaceFragments(GalleryFragment.class, "gallery");
     }
 
     @Override

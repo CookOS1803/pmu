@@ -85,7 +85,7 @@ public class RegisterFragment extends Fragment {
             activity.getAccounts().put(email, HashPassword.getHash(password));
             registerSuccess();
 
-            ((MainActivity)getActivity()).replaceFragments(LoginFragment.class);
+            ((MainActivity)getActivity()).replaceFragments(LoginFragment.class, "login");
         });
     }
 

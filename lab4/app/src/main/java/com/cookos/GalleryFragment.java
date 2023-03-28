@@ -1,6 +1,8 @@
 package com.cookos;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,10 +27,14 @@ import java.util.ArrayList;
 
 public class GalleryFragment extends Fragment {
 
-    public final int RC_IMAGE = 1;
-    public final int RC_MUSIC = 2;
+    public final int RC_ADD_POST = 3;
 
     private RecyclerView recyclerView;
+
+    public Button getButton() {
+        return button;
+    }
+
     private Button button;
     private ArrayList<CreateList> createLists;
     public int currentlyPlaying = -1;
@@ -50,6 +56,7 @@ public class GalleryFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         activity = (MainActivity) getActivity();
+        activity.setCurrentGallery(this);
     }
 
     @Override
@@ -75,10 +82,10 @@ public class GalleryFragment extends Fragment {
 
         button = view.findViewById(R.id.button);
         button.setOnClickListener(v -> {
-            Intent intent = new Intent();
-            intent.setType("audio/*");
-            intent.setAction(Intent.ACTION_GET_CONTENT);
-            startActivityForResult(Intent.createChooser(intent, "Select Audio"), RC_MUSIC);
+            //activity.replaceFragments(AddPostFragment.class, "post");
+
+            var intent = new Intent(activity, AddPostActivity.class);
+            startActivityForResult(intent, RC_ADD_POST);
         });
     }
 
@@ -92,22 +99,9 @@ public class GalleryFragment extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
-                case RC_IMAGE:
-                    var uriImage = data.getData();
-                    var c = new CreateList();
-                    c.setImage_URI(uriImage);
-
-                    createLists.add(c);
-
-                    Intent intent = new Intent();
-                    intent.setType("audio/*");
-                    intent.setAction(Intent.ACTION_GET_CONTENT);
-                    startActivityForResult(Intent.createChooser(intent, "Select Audio"), RC_MUSIC);
-                    break;
-                case RC_MUSIC:
-                    var uriAudio = data.getData();
-
-                    createLists.get(createLists.size() - 1).setAudio_uri(uriAudio);
+                case RC_ADD_POST:
+                    var cell = (CreateList)data.getParcelableExtra(getString(R.string.cellExtra));
+                    createLists.add(cell);
 
                     updateView();
                     break;
