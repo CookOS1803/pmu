@@ -38,7 +38,7 @@
                 android:layout_height="wrap_content"
                 android:paddingStart="5dp"
                 android:paddingEnd="5dp"
-                android:autoLink="none"
+                android:autoLink="web"
                 android:text="ffffffffffffffffffffffffffddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddfffffjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjj"
                 android:textAlignment="viewStart"
                 android:textColor="#000"
